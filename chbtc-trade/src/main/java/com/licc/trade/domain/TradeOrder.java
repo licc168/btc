@@ -30,7 +30,7 @@ public class TradeOrder {
     private String buyFees;
     //status : 买单状态(0：待成交,1：取消,2：交易完成)
     @Column(name = "buy_status")
-    private String buyStatus;
+    private Integer buyStatus;
     @Column(name = "sell_order_id")
     private String sellOrderId;
     @Column(name = "sell_price")
@@ -39,7 +39,7 @@ public class TradeOrder {
     private String sellFees;
     //status : 卖单状态(0：待成交,1：取消,2：交易完成，4：委托失敗)
     @Column(name = "sell_status")
-    private String sellStatus;
+    private Integer sellStatus;
     @Column(name = "user_id")
     private Long userId;
 
@@ -100,13 +100,7 @@ public class TradeOrder {
         this.buyFees = buyFees;
     }
 
-    public String getBuyStatus() {
-        return buyStatus;
-    }
 
-    public void setBuyStatus(String buyStatus) {
-        this.buyStatus = buyStatus;
-    }
 
     public String getSellOrderId() {
         return sellOrderId;
@@ -132,11 +126,19 @@ public class TradeOrder {
         this.sellFees = sellFees;
     }
 
-    public String getSellStatus() {
+    public Integer getBuyStatus() {
+        return buyStatus;
+    }
+
+    public void setBuyStatus(Integer buyStatus) {
+        this.buyStatus = buyStatus;
+    }
+
+    public Integer getSellStatus() {
         return sellStatus;
     }
 
-    public void setSellStatus(String sellStatus) {
+    public void setSellStatus(Integer sellStatus) {
         this.sellStatus = sellStatus;
     }
 

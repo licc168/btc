@@ -29,11 +29,19 @@ public class ParamConfig {
     @Column(name = "order_sell_diff")
     private String  orderSellDiff;     // 订单价格与卖的价格差
 
+    @Column(name = "buy_over_time")
+
+    private  Long buyOverTime;//买单超时时间
+
     @Column(name = "max_buy_number")
     private Long maxBuyNumber;// 最大委托笔数
 
     @Column(name = "buy_number")
     private Long buyNumber;   // 单笔买入个数
+
+
+
+
 
     public Long getId() {
         return id;
@@ -97,5 +105,13 @@ public class ParamConfig {
 
     public void setBuyNumber(Long buyNumber) {
         this.buyNumber = buyNumber;
+    }
+
+    public Long getBuyOverTime() {
+        return buyOverTime;
+    }
+
+    public void setBuyOverTime(Long buyOverTime) {
+        this.buyOverTime = buyOverTime;
     }
 }

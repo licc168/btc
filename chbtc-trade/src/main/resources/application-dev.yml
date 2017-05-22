@@ -23,7 +23,7 @@ spring:
     jpa:
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         database: MYSQL
-        show_sql: false
+        show_sql: true
         properties:
             hibernate.cache.use_second_level_cache: true
             hibernate.hbm2ddl.auto: update
@@ -53,12 +53,7 @@ spring:
          max-idle: 8
          max-wait: 1
          min-idle: 0
-wechat:
-  mp:
-    appId: wx7b36f06a4ae4867a
-    secret: 4a0d7b4a2721f04db97bfdedc5245681
-    token: zBC_V0m1DOszqr73JeiuMuiE09AfSyk3ECXQ9x5Ywc0FjPrJqTBxgxoIcSTBWqAldnbHLhcqWwNsL1KQxrZRIhgBzJSkKL-7aL-ga5Kfh5xu54L-w2HmFs3uPsJoyrD_SUGiAFAWYK
-    aesKey:
+
 
 
 

@@ -1,9 +1,12 @@
-package com.licc.btc.chbtcapi.service;
+package com.licc.btc.chbtcapi.service.impl;
 
+import com.licc.btc.chbtcapi.service.IChbtcApiService;
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.licc.btc.chbtcapi.Consts;
@@ -18,6 +21,7 @@ import com.licc.btc.chbtcapi.res.order.OrderRes;
 import com.licc.btc.chbtcapi.res.ticker.TickerApiRes;
 import com.licc.btc.chbtcapi.util.EncryDigestUtil;
 import com.licc.btc.chbtcapi.util.OkHttpUtils;
+import org.springframework.stereotype.Service;
 
 /**
  * 中国比特币交易网 API
@@ -27,9 +31,10 @@ import com.licc.btc.chbtcapi.util.OkHttpUtils;
  * @date 2017/5/22 12:21
  * @see
  */
-public class ChbtcApiService {
-    public static final ObjectMapper mapper = new ObjectMapper();
-    private Logger                   logger = LoggerFactory.getLogger(this.getClass());
+@Service
+public class ChbtcApiServiceImpl implements IChbtcApiService {
+     static final ObjectMapper mapper = new ObjectMapper();
+      private Logger  logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 获取行情数据
@@ -37,6 +42,7 @@ public class ChbtcApiService {
      * @param tradeCurrency
      * @return
      */
+    @Override
     public TickerApiRes ticker(ETradeCurrency tradeCurrency) {
         String url = OkHttpUtils.attachHttpGetParam(Consts.Chbtc_Ticker, "currency", tradeCurrency.getValue());
         try {
@@ -58,6 +64,7 @@ public class ChbtcApiService {
      * @param accountReq
      * @return
      */
+    @Override
     public TickerApiRes getAccountInfo(AccountReq accountReq) {
         String params = "method=" + Consts.Chbtc_Trade_AccountInfo + "&accesskey=" + accountReq.getAccessKey();
         String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(accountReq.getSecretKey()));
@@ -82,6 +89,7 @@ public class ChbtcApiService {
      * @param orderReq
      * @return
      */
+    @Override
     public OrderRes order(OrderReq orderReq) {
         String params = "method=" + Consts.Chbtc_Trade_Order + "&accesskey=" + orderReq.getAccessKey() + "&price=" + orderReq.getPrice()
                 + "&amount=" + orderReq.getAmount() + "&tradeType=" + orderReq.getTradeOrderType().getValue() + "&currency="
@@ -107,6 +115,7 @@ public class ChbtcApiService {
      * @param cancelOrderReq
      * @return
      */
+    @Override
     public CancelOrderRes cancelOrder(CancelOrderReq cancelOrderReq) {
         String params = "method=" + Consts.Chbtc_Trade_CancelOrder + "&accesskey=" + cancelOrderReq.getAccessKey() + "&id="
                 + cancelOrderReq.getId() + "&currency=" + cancelOrderReq.getTradeCurrency().getValue();
@@ -131,6 +140,7 @@ public class ChbtcApiService {
      * @param getOrderReq
      * @return
      */
+    @Override
     public GetOrderRes getOrder(GetOrderReq getOrderReq) {
         String params = "method=" + Consts.Chbtc_Trade_GetOrder + "&accesskey=" + getOrderReq.getAccessKey() + "&id=" + getOrderReq.getId()
                 + "&currency=" + getOrderReq.getTradeCurrency().getValue();

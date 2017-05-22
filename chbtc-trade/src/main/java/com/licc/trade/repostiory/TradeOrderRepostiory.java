@@ -12,4 +12,6 @@ public interface TradeOrderRepostiory extends JpaRepository<TradeOrder, Long> {
 
     List<TradeOrder> findByUserIdAndCurrencyAndBuyStatusAndSellStatus(Long userId, String currency, Integer buyStatus, Integer sellStatus);
 
+    List<TradeOrder> findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(Long userId, String currency, List<Integer> buyStatus, Long id, String cur,List<Integer> sellStatus);
+
 }
