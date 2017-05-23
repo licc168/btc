@@ -153,7 +153,7 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
             return getOrderRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("获取订单信息出错");
+            logger.error("获取订单信息出错 -订单编号："+getOrderReq.getId() );
             return null;
         }
 

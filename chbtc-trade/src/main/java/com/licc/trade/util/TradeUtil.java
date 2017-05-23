@@ -40,5 +40,9 @@ public class TradeUtil {
 
     }
     public static void main(String arge[]){
+
+        if(TradeUtil.diffString("65.5","65.15","0.1")){
+            System.out.println(111);
+        }
     }
 }

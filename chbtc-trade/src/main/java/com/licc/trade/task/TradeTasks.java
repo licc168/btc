@@ -30,11 +30,14 @@ public class TradeTasks {
   TradeService tradeService;
   @Resource
   UserRepostiory userRepostiory;
-  @Scheduled(fixedRate = 1000)
+  @Scheduled(fixedRate = 2000)
   public void listTrade() {
    List<User> userList =  userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
     userList.forEach(user -> {
       tradeService.execute(ETradeCurrency.ETC_CNY,user);
+      tradeService.execute(ETradeCurrency.LTC_CNY,user);
+      tradeService.execute(ETradeCurrency.ETH_CNY,user);
+
     });
 
   }

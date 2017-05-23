@@ -33,6 +33,13 @@ public class ParamConfig {
 
     private  Long buyOverTime;//买单超时时间
 
+
+    @Column(name = "down_buy")
+    private String  downBuy;//价格降低参数
+
+    @Column(name = "down_buy_enable")
+    private Boolean  downBuyEnable;//价格降低参数
+
     @Column(name = "max_buy_number")
     private Long maxBuyNumber;// 最大委托笔数
 
@@ -113,5 +120,21 @@ public class ParamConfig {
 
     public void setBuyOverTime(Long buyOverTime) {
         this.buyOverTime = buyOverTime;
+    }
+
+    public String getDownBuy() {
+        return downBuy;
+    }
+
+    public void setDownBuy(String downBuy) {
+        this.downBuy = downBuy;
+    }
+
+    public Boolean getDownBuyEnable() {
+        return downBuyEnable;
+    }
+
+    public void setDownBuyEnable(Boolean downBuyEnable) {
+        this.downBuyEnable = downBuyEnable;
     }
 }
