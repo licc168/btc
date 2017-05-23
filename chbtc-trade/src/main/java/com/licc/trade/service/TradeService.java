@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.licc.btc.chbtcapi.enums.ETradeCurrency;
@@ -106,24 +107,27 @@ public class TradeService {
                     tradeOrder.setSellStatus(ETradeOrderStatus.CANCEL.getKey());
                     tradeOrderRepostiory.save(tradeOrder);
                 } else {
-                    GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
-                    if (orderRes != null) {
-                        tradeOrder.setBuyStatus(orderRes.getStatus());
-                        tradeOrderRepostiory.save(tradeOrder);
+                    if (ETradeOrderStatus.SUCCESS.getKey()!=tradeOrder.getBuyStatus().intValue()&&ETradeOrderStatus.CANCEL.getKey()!=tradeOrder.getBuyStatus().intValue()) {
+                        GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
+                        if (orderRes != null) {
+                            tradeOrder.setBuyStatus(orderRes.getStatus());
+                            tradeOrderRepostiory.save(tradeOrder);
+                        }
                     }
                 }
             }
             // 修改委托卖单的状态
             if (tradeOrder.getSellOrderId() != null) {
-                getOrderReq.setId(tradeOrder.getSellOrderId());
-                GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
-                if (orderRes != null) {
-                    tradeOrder.setSellStatus(orderRes.getStatus());
+                if (ETradeOrderStatus.SUCCESS.getKey()!=tradeOrder.getSellStatus().intValue()&&ETradeOrderStatus.CANCEL.getKey()!=tradeOrder.getSellStatus().intValue()) {
+                    getOrderReq.setId(tradeOrder.getSellOrderId());
+                    GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
+                    if (orderRes != null) {
+                        tradeOrder.setSellStatus(orderRes.getStatus());
+                    }
+                    tradeOrderRepostiory.save(tradeOrder);
+
                 }
-                tradeOrderRepostiory.save(tradeOrder);
-
             }
-
         });
     }
 
@@ -188,11 +192,14 @@ public class TradeService {
      */
     public void buyOrder(ETradeCurrency tradeCurrency, User user, ParamConfig config, TickerApiRes tickerApiRes) {
         // 根据币种和用户查询待成交的委托订单数量
-        List<String> list = tradeOrderRepostiory.findByUserIdAndCurrency(user.getId(), tradeCurrency.getValue());
-
+        List<Integer> buyStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey(), ETradeOrderStatus.WAIT.getKey(),
+                ETradeOrderStatus.WAIT_NO.getKey());
+        List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey(), ETradeOrderStatus.CANCEL.getKey());
+        Long sellNum = tradeOrderRepostiory.countByUserIdAndCurrencyAndBuyStatusInAndSellStatusNotIn(user.getId(), tradeCurrency.getValue(),
+                buyStatus, sellStatus);
         // 如果待完成的委托卖出订单数量等于设置的最大委托笔数则不进行买卖交易
-        if (list.size() >= config.getMaxBuyNumber()) {
-            logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "达到了最大卖出委托笔数" + config.getMaxBuyNumber());
+        if (sellNum == config.getMaxBuyNumber()) {
+            logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "达到了最大卖出委托笔数");
             return;
         }
 
@@ -204,20 +211,18 @@ public class TradeService {
             return;
         }
         // 判断当前价格与上一个委托价格差是不是小于设定值 如果是则不进行买卖交易
-       if(!CollectionUtils.isEmpty(list)) {
-           if (config.getDownBuyEnable()) {//开关
-               String lastPrice = list.get(0);
-               flag = TradeUtil
-                   .diffString(lastPrice, tickerApiRes.getTicker().getBuy(), config.getDownBuy());
-               if (!flag) {
-                   logger.info(
-                       "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "最后委托价格("
-                           + lastPrice + ")与买入价("
-                           + tickerApiRes.getTicker().getBuy() + ")差值需要大于" + config.getDownBuy());
-                   return;
-               }
-           }
-       }
+
+        String lastPrice = tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(user.getId(), tradeCurrency.getValue());
+        if (!StringUtils.isEmpty(lastPrice)) {
+            if (config.getDownBuyEnable()) {// 开关
+                flag = TradeUtil.diffString(lastPrice, tickerApiRes.getTicker().getBuy(), config.getDownBuy());
+                if (!flag) {
+                    logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "最后委托价格(" + lastPrice + ")与买入价("
+                            + tickerApiRes.getTicker().getBuy() + ")差值需要大于" + config.getDownBuy());
+                    return;
+                }
+            }
+        }
 
         // 判断卖一价和买一价差值
         String ticker_sell = tickerApiRes.getTicker().getSell();
@@ -251,6 +256,9 @@ public class TradeService {
             tradeOrder.setCurrency(tradeCurrency.getValue());
             tradeOrder.setSellStatus(ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey());
             tradeOrderRepostiory.save(tradeOrder);
+        } else {
+            logger.info(
+                    "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "数量：" + config.getBuyNumber() + orderRes.getMessage());
         }
 
     }

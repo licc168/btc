@@ -16,6 +16,7 @@ public interface TradeOrderRepostiory extends JpaRepository<TradeOrder, Long> {
     List<TradeOrder> findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(Long userId, String currency,
             List<Integer> buyStatus, Long id, String cur, List<Integer> sellStatus);
 
-    @Query(value = "select  buy_price from trade_order where buy_status in (0,2,3) and  sell_status not in (2,1) and user_id = ?1 and currency = ?2 order by id desc  ",nativeQuery=true)
-       List<String> findByUserIdAndCurrency(Long userId, String currency);
+    @Query(value = "select  buy_price from trade_order where user_id = ?1 and currency = ?2 order by id desc limit 0,1 ", nativeQuery = true)
+    String getLastPriceByUserIdAndCurrency(Long userId, String currency);
+
 }

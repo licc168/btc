@@ -1,5 +1,8 @@
 package com.licc.trade.util;
 
+import com.licc.btc.chbtcapi.enums.ETradeOrderStatus;
+import com.licc.btc.chbtcapi.enums.ETradeOrderType;
+import com.licc.trade.domain.TradeOrder;
 import java.math.BigDecimal;
 
 /**
@@ -39,10 +42,15 @@ public class TradeUtil {
         return price.add(new BigDecimal("0.01")).toString();
 
     }
-    public static void main(String arge[]){
 
-        if(TradeUtil.diffString("65.5","65.15","0.1")){
+
+    public static void main(String arge[]){
+        int i=9;
+        if(i>0||i<8){
             System.out.println(111);
         }
+//        if(TradeUtil.diffString("73.35","72.45","1")){
+//            System.out.println(111);
+//        }
     }
 }

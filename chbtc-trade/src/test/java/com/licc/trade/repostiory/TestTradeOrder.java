@@ -51,7 +51,7 @@ public class TestTradeOrder {
      ParamConfig config = configRepostiory.findOneByUserIdAndCurrency(1L,ETradeCurrency.ETH_CNY.getValue());
 
 
-    List<String> list =  tradeOrderRepostiory.findByUserIdAndCurrency(1L,ETradeCurrency.LTC_CNY.getValue());
+    String list =  tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(1L,ETradeCurrency.LTC_CNY.getValue());
     }
 
 }
