@@ -1,12 +1,17 @@
 package com.licc.btc.chbtcapi.service.impl;
 
-import com.licc.btc.chbtcapi.service.IChbtcApiService;
+import com.licc.btc.chbtcapi.req.GetOrdersNewReq;
+import com.licc.btc.chbtcapi.res.order.GetOrdersRes;
+import com.licc.btc.chbtcapi.util.BeanMapper;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.licc.btc.chbtcapi.Consts;
@@ -18,10 +23,12 @@ import com.licc.btc.chbtcapi.req.OrderReq;
 import com.licc.btc.chbtcapi.res.order.CancelOrderRes;
 import com.licc.btc.chbtcapi.res.order.GetOrderRes;
 import com.licc.btc.chbtcapi.res.order.OrderRes;
+import com.licc.btc.chbtcapi.req.GetUnfinishedOrdersReq;
 import com.licc.btc.chbtcapi.res.ticker.TickerApiRes;
+import com.licc.btc.chbtcapi.service.IChbtcApiService;
 import com.licc.btc.chbtcapi.util.EncryDigestUtil;
 import com.licc.btc.chbtcapi.util.OkHttpUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * 中国比特币交易网 API
@@ -33,8 +40,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ChbtcApiServiceImpl implements IChbtcApiService {
-     static final ObjectMapper mapper = new ObjectMapper();
-      private Logger  logger = LoggerFactory.getLogger(this.getClass());
+    static final ObjectMapper mapper = new ObjectMapper();
+    private Logger            logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 获取行情数据
@@ -149,13 +156,58 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
                 + System.currentTimeMillis();
         try {
             String res = OkHttpUtils.getStringFromServer(url);
+
             GetOrderRes getOrderRes = mapper.readValue(res, GetOrderRes.class);
             return getOrderRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("获取订单信息出错 -订单编号："+getOrderReq.getId() );
+            logger.error("获取订单信息出错 -订单编号：" + getOrderReq.getId());
             return null;
         }
 
     }
+
+    @Override
+    public List<GetOrdersRes> getUnfinishedOrdersIgnoreTradeType(GetUnfinishedOrdersReq req) {
+        String params = "method=" + Consts.Chbtc_Unfinished_Orders + "&accesskey=" + req.getAccessKey() + "&currency="
+                + req.getCurrency().getValue() + "&pageIndex=" + req.getPageIndex() + "&pageSize=" + req.getPageSize();
+        String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(req.getSecretKey()));
+        String url = Consts.Chbtc_Trade + Consts.Chbtc_Unfinished_Orders + "?" + params + "&sign=" + hash + "&reqTime="
+                + System.currentTimeMillis();
+        try {
+            String res = OkHttpUtils.getStringFromServer(url);
+            if(StringUtils.isEmpty(res)){
+                return Collections.EMPTY_LIST;
+            }
+            List<GetOrdersRes> getOrderRes = mapper.readValue(res, List.class);
+            return getOrderRes;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录  出错");
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public List<GetOrdersRes> getOrdersNew(GetOrdersNewReq req) {
+        String params = "method=" + Consts.Chbtc_Get_Orders_New + "&accesskey=" + req.getAccessKey() + "&tradeType="
+          +req.getOrderType().getValue()+"&currency=" + req.getCurrency().getValue() + "&pageIndex=" + req.getPageIndex() + "&pageSize=" + req.getPageSize();
+        String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(req.getSecretKey()));
+        String url = Consts.Chbtc_Trade + Consts.Chbtc_Get_Orders_New + "?" + params + "&sign=" + hash + "&reqTime="
+            + System.currentTimeMillis();
+        try {
+            String res = OkHttpUtils.get(url,"utf-8");
+            if(StringUtils.isEmpty(res)){
+                return Collections.EMPTY_LIST;
+            }
+            List<Map> getOrderRes = mapper.readValue(res, List.class);
+            List<GetOrdersRes>  resList =  BeanMapper.mapList( getOrderRes,GetOrdersRes.class);
+            return  resList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("(新)获取多个委托买单或卖单，每次请求返回pageSize<100条记录  出错");
+            return Collections.EMPTY_LIST;
+        }
+    }
+
 }

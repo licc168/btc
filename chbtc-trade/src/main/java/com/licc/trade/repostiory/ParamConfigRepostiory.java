@@ -11,5 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @see
  */
 public interface ParamConfigRepostiory extends JpaRepository<ParamConfig, Long> {
-      ParamConfig findOneByUserIdAndCurrency(Long userId,String currency);
+      ParamConfig findOneByUserIdAndCurrencyAndDeleteFlag(Long userId,String currency,Integer deleteFlag);
 }

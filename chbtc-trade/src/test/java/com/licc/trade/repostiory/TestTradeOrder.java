@@ -48,7 +48,6 @@ public class TestTradeOrder {
       List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey());
       Long sellNum = tradeOrderRepostiory.countByUserIdAndCurrencyAndBuyStatusInAndSellStatusNotIn(1L, ETradeCurrency.LTC_CNY.getValue(),
           buyStatus, sellStatus);*/
-     ParamConfig config = configRepostiory.findOneByUserIdAndCurrency(1L,ETradeCurrency.ETH_CNY.getValue());
 
 
     String list =  tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(1L,ETradeCurrency.LTC_CNY.getValue());

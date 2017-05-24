@@ -13,14 +13,15 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.licc.btc.chbtcapi.enums.EDeleteFlag;
 import com.licc.btc.chbtcapi.enums.ETradeCurrency;
 import com.licc.btc.chbtcapi.enums.ETradeOrderStatus;
 import com.licc.btc.chbtcapi.enums.ETradeOrderType;
 import com.licc.btc.chbtcapi.enums.ETradeResStatus;
 import com.licc.btc.chbtcapi.req.CancelOrderReq;
-import com.licc.btc.chbtcapi.req.GetOrderReq;
+import com.licc.btc.chbtcapi.req.GetOrdersNewReq;
 import com.licc.btc.chbtcapi.req.OrderReq;
-import com.licc.btc.chbtcapi.res.order.GetOrderRes;
+import com.licc.btc.chbtcapi.res.order.GetOrdersRes;
 import com.licc.btc.chbtcapi.res.order.OrderRes;
 import com.licc.btc.chbtcapi.res.ticker.TickerApiRes;
 import com.licc.btc.chbtcapi.service.IChbtcApiService;
@@ -57,15 +58,18 @@ public class TradeService {
      */
     public void execute(ETradeCurrency tradeCurrency, User user) {
         // 根据币种和用户查询配置信息
-        ParamConfig config = configRepostiory.findOneByUserIdAndCurrency(user.getId(), tradeCurrency.getValue());
+        ParamConfig config = configRepostiory.findOneByUserIdAndCurrencyAndDeleteFlag(user.getId(), tradeCurrency.getValue(),
+                EDeleteFlag.NORMAL.getIntegerCode());
         if (config == null) {
             logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "当前配置为空 请检查配置 ");
             return;
         }
+        // 取消超时订单
+        cancelOverTimeOrder(tradeCurrency, user, config);
         // 查询当前行情数据
         TickerApiRes tickerApiRes = chbtcApiService.ticker(tradeCurrency);
         // 更新当前订单状态
-        updateOrderStatus(tradeCurrency, user, config, tickerApiRes);
+        updateOrderStatus(tradeCurrency, user);
         // 卖出委托订单
         sellOrder(tradeCurrency, user, config, tickerApiRes);
         // 买入委托订单
@@ -73,62 +77,69 @@ public class TradeService {
 
     }
 
-    public void updateOrderStatus(ETradeCurrency tradeCurrency, User user, ParamConfig config, TickerApiRes tickerApiRes) {
-        List<Integer> buyStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey(), ETradeOrderStatus.WAIT.getKey(),
-                ETradeOrderStatus.WAIT_NO.getKey());
-        List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey(), ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey(),
-                ETradeOrderStatus.WAIT_NO.getKey());
-        List<TradeOrder> tradeOrders = tradeOrderRepostiory.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(
-                user.getId(), tradeCurrency.getValue(), buyStatus, user.getId(), tradeCurrency.getValue(), sellStatus);
-        if (CollectionUtils.isEmpty(tradeOrders)) {
-            logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "更新订单状态 》》未完成或者未取消的订单为空 ");
+    // 取消超时买入订单
+    void cancelOverTimeOrder(ETradeCurrency tradeCurrency, User user, ParamConfig config) {
+        List<Integer> buyStatusList = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey(), ETradeOrderStatus.WAIT_NO.getKey());
+        List<TradeOrder> tradeOrderList = tradeOrderRepostiory.findByUserIdAndCurrencyAndBuyStatusIn(user.getId(), tradeCurrency.getValue(),
+                buyStatusList);
+        if (CollectionUtils.isEmpty(tradeOrderList))
             return;
-        }
-        tradeOrders.forEach(tradeOrder -> {
-            GetOrderReq getOrderReq = new GetOrderReq();
-            getOrderReq.setTradeCurrency(tradeCurrency);
-            getOrderReq.setAccessKey(user.getAccessKey());
-            getOrderReq.setSecretKey(user.getSecretKey());
-            // 修改委托买单的状态\
-            if (tradeOrder.getBuyOrderId() != null) {
-                getOrderReq.setId(tradeOrder.getBuyOrderId());
-                // 判断是否超时
-                if (ETradeOrderStatus.SUCCESS.getKey() != tradeOrder.getBuyStatus()
-                        && System.currentTimeMillis() - tradeOrder.getCreateTime().getTime() >= config.getBuyOverTime()) {
-                    logger.info("状态(" + tradeOrder.getBuyStatus() + ")买单间隔时间:"
-                            + (System.currentTimeMillis() - tradeOrder.getCreateTime().getTime() + "大于" + config.getBuyOverTime()));
-                    CancelOrderReq cancelOrderReq = new CancelOrderReq();
-                    cancelOrderReq.setId(tradeOrder.getBuyOrderId());
-                    cancelOrderReq.setTradeCurrency(tradeCurrency);
-                    cancelOrderReq.setAccessKey(user.getAccessKey());
-                    cancelOrderReq.setSecretKey(user.getSecretKey());
-                    chbtcApiService.cancelOrder(cancelOrderReq);
-                    tradeOrder.setBuyStatus(ETradeOrderStatus.CANCEL.getKey());
-                    tradeOrder.setSellStatus(ETradeOrderStatus.CANCEL.getKey());
-                    tradeOrderRepostiory.save(tradeOrder);
-                } else {
-                    if (ETradeOrderStatus.SUCCESS.getKey()!=tradeOrder.getBuyStatus().intValue()&&ETradeOrderStatus.CANCEL.getKey()!=tradeOrder.getBuyStatus().intValue()) {
-                        GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
-                        if (orderRes != null) {
-                            tradeOrder.setBuyStatus(orderRes.getStatus());
-                            tradeOrderRepostiory.save(tradeOrder);
-                        }
-                    }
-                }
+        tradeOrderList.forEach(tradeOrder -> {
+            if (ETradeOrderStatus.SUCCESS.getKey() != tradeOrder.getBuyStatus()
+                    && System.currentTimeMillis() - tradeOrder.getCreateTime().getTime() >= config.getBuyOverTime()) {
+                logger.info("状态(" + tradeOrder.getBuyStatus() + ")买单间隔时间:"
+                        + (System.currentTimeMillis() - tradeOrder.getCreateTime().getTime() + "大于" + config.getBuyOverTime()));
+                CancelOrderReq cancelOrderReq = new CancelOrderReq();
+                cancelOrderReq.setId(tradeOrder.getBuyOrderId());
+                cancelOrderReq.setTradeCurrency(tradeCurrency);
+                cancelOrderReq.setAccessKey(user.getAccessKey());
+                cancelOrderReq.setSecretKey(user.getSecretKey());
+                chbtcApiService.cancelOrder(cancelOrderReq);
+                tradeOrder.setBuyStatus(ETradeOrderStatus.CANCEL.getKey());
+                tradeOrder.setSellStatus(ETradeOrderStatus.CANCEL.getKey());
+                tradeOrderRepostiory.save(tradeOrder);
             }
-            // 修改委托卖单的状态
-            if (tradeOrder.getSellOrderId() != null) {
-                if (ETradeOrderStatus.SUCCESS.getKey()!=tradeOrder.getSellStatus().intValue()&&ETradeOrderStatus.CANCEL.getKey()!=tradeOrder.getSellStatus().intValue()) {
-                    getOrderReq.setId(tradeOrder.getSellOrderId());
-                    GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
-                    if (orderRes != null) {
-                        tradeOrder.setSellStatus(orderRes.getStatus());
-                    }
-                    tradeOrderRepostiory.save(tradeOrder);
 
-                }
-            }
         });
+
+    }
+
+    void updateOrderStatus(ETradeCurrency tradeCurrency, User user) {
+        GetOrdersNewReq req = new GetOrdersNewReq();
+        req.setCurrency(tradeCurrency);
+        req.setAccessKey(user.getAccessKey());
+        req.setSecretKey(user.getSecretKey());
+        req.setPageIndex(0);
+        req.setPageSize(3);
+        // 更新买单状态
+        req.setOrderType(ETradeOrderType.ORDER_BUY);
+        List<GetOrdersRes> buyList = chbtcApiService.getOrdersNew(req);
+        if (!CollectionUtils.isEmpty(buyList)) {
+            buyList.forEach(buyOrder -> {
+                TradeOrder order = tradeOrderRepostiory.findByBuyOrderIdAndUserId(buyOrder.getId(), user.getId());
+                if (order != null) {
+                    order.setBuyStatus(buyOrder.getStatus());
+                    order.setBuyFees(buyOrder.getFees());
+                    tradeOrderRepostiory.save(order);
+                }
+            });
+
+        }
+        // 更新卖单状态
+        req.setOrderType(ETradeOrderType.ORDER_SELL);
+        List<GetOrdersRes> sellList = chbtcApiService.getOrdersNew(req);
+        if (!CollectionUtils.isEmpty(sellList)) {
+            sellList.forEach(buyOrder -> {
+                TradeOrder order = tradeOrderRepostiory.findBySellOrderIdAndUserId(buyOrder.getId(), user.getId());
+                if (order != null) {
+                    order.setSellStatus(buyOrder.getStatus());
+                    order.setSellFees(buyOrder.getFees());
+                    tradeOrderRepostiory.save(order);
+                }
+            });
+
+        }
+
     }
 
     /**

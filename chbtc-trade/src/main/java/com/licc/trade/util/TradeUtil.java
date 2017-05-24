@@ -4,6 +4,8 @@ import com.licc.btc.chbtcapi.enums.ETradeOrderStatus;
 import com.licc.btc.chbtcapi.enums.ETradeOrderType;
 import com.licc.trade.domain.TradeOrder;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -45,10 +47,7 @@ public class TradeUtil {
 
 
     public static void main(String arge[]){
-        int i=9;
-        if(i>0||i<8){
-            System.out.println(111);
-        }
+
 //        if(TradeUtil.diffString("73.35","72.45","1")){
 //            System.out.println(111);
 //        }

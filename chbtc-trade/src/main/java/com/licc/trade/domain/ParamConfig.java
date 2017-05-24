@@ -44,11 +44,12 @@ public class ParamConfig {
     private Long maxBuyNumber;// 最大委托笔数
 
     @Column(name = "buy_number")
-    private Long buyNumber;   // 单笔买入个数
+    private String buyNumber;   // 单笔买入个数
 
 
 
-
+    @Column(name ="delete_flag")
+    private Integer deleteFlag;
 
     public Long getId() {
         return id;
@@ -106,11 +107,11 @@ public class ParamConfig {
         this.maxBuyNumber = maxBuyNumber;
     }
 
-    public Long getBuyNumber() {
+    public String getBuyNumber() {
         return buyNumber;
     }
 
-    public void setBuyNumber(Long buyNumber) {
+    public void setBuyNumber(String buyNumber) {
         this.buyNumber = buyNumber;
     }
 
@@ -136,5 +137,13 @@ public class ParamConfig {
 
     public void setDownBuyEnable(Boolean downBuyEnable) {
         this.downBuyEnable = downBuyEnable;
+    }
+
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
     }
 }
