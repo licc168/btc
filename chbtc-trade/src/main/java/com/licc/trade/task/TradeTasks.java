@@ -49,7 +49,7 @@ public class TradeTasks {
     });
 
   }
-  @Scheduled(fixedRate = 4000)
+/*  @Scheduled(fixedRate = 4000)
   public void listTrade_ETH() {
     List<User> userList =  userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
     userList.forEach(user -> {
@@ -57,7 +57,7 @@ public class TradeTasks {
 
     });
 
-  }
+  }*/
  /* @Scheduled(fixedRate = 2000)
   public void listTrade_BTC() {
     List<User> userList =  userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());

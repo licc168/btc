@@ -39,6 +39,14 @@ public class TradeUtil {
       return price.subtract(new BigDecimal("0.01")).toString();
 
     }
+
+
+    public static  String getSellPriceByBuy(String buyPrice,String orderSellDiff){
+        BigDecimal buyPriceBD = new BigDecimal(buyPrice);
+        BigDecimal orderSellBD = new BigDecimal(orderSellDiff);
+        return  buyPriceBD.add(orderSellBD).toString();
+
+    }
     public static  String getBuyPrice(String sell){
         BigDecimal price = new BigDecimal(sell);
         return price.add(new BigDecimal("0.01")).toString();
