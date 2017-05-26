@@ -1,3 +1,4 @@
+/*
 package com.licc.trade.config.redis;
 
 import com.licc.trade.util.Collections3;
@@ -73,4 +74,4 @@ public class CacheConfig extends CachingConfigurerSupport {
       jackson2JsonRedisSerializer.setObjectMapper(om);
       template.setValueSerializer(jackson2JsonRedisSerializer);
   }
-}
+}*/

@@ -3,12 +3,14 @@ package com.licc.btc.chbtcapi.service.impl;
 import com.licc.btc.chbtcapi.req.GetOrdersNewReq;
 import com.licc.btc.chbtcapi.res.order.GetOrdersRes;
 import com.licc.btc.chbtcapi.util.BeanMapper;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * 中国比特币交易网 API
- * 
+ *
  * @author lichangchao
  * @version 1.0.0
  * @date 2017/5/22 12:21
@@ -41,17 +43,19 @@ import org.springframework.util.StringUtils;
 @Service
 public class ChbtcApiServiceImpl implements IChbtcApiService {
     static final ObjectMapper mapper = new ObjectMapper();
-    private Logger            logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 获取行情数据
-     * 
+     *
      * @param tradeCurrency
      * @return
      */
     @Override
     public TickerApiRes ticker(ETradeCurrency tradeCurrency) {
         String url = OkHttpUtils.attachHttpGetParam(Consts.Chbtc_Ticker, "currency", tradeCurrency.getValue());
+        //logger.info("获取行情接口:"+url);
+
         try {
             String res = OkHttpUtils.getStringFromServer(url);
             TickerApiRes tickerApiRes = mapper.readValue(res, TickerApiRes.class);
@@ -67,7 +71,7 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
 
     /**
      * 获取用户信息
-     * 
+     *
      * @param accountReq
      * @return
      */
@@ -92,7 +96,7 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
 
     /**
      * 委托买卖订单
-     * 
+     *
      * @param orderReq
      * @return
      */
@@ -118,7 +122,7 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
 
     /**
      * 取消委托订单
-     * 
+     *
      * @param cancelOrderReq
      * @return
      */
@@ -176,7 +180,7 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
                 + System.currentTimeMillis();
         try {
             String res = OkHttpUtils.getStringFromServer(url);
-            if(StringUtils.isEmpty(res)){
+            if (StringUtils.isEmpty(res)) {
                 return Collections.EMPTY_LIST;
             }
             List<GetOrdersRes> getOrderRes = mapper.readValue(res, List.class);
@@ -191,18 +195,18 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
     @Override
     public List<GetOrdersRes> getOrdersNew(GetOrdersNewReq req) {
         String params = "method=" + Consts.Chbtc_Get_Orders_New + "&accesskey=" + req.getAccessKey() + "&tradeType="
-          +req.getOrderType().getValue()+"&currency=" + req.getCurrency().getValue() + "&pageIndex=" + req.getPageIndex() + "&pageSize=" + req.getPageSize();
+                + req.getOrderType().getValue() + "&currency=" + req.getCurrency().getValue() + "&pageIndex=" + req.getPageIndex() + "&pageSize=" + req.getPageSize();
         String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(req.getSecretKey()));
         String url = Consts.Chbtc_Trade + Consts.Chbtc_Get_Orders_New + "?" + params + "&sign=" + hash + "&reqTime="
-            + System.currentTimeMillis();
+                + System.currentTimeMillis();
         try {
-            String res = OkHttpUtils.get(url,"utf-8");
-            if(StringUtils.isEmpty(res)){
+            String res = OkHttpUtils.get(url, "utf-8");
+            if (StringUtils.isEmpty(res)) {
                 return Collections.EMPTY_LIST;
             }
             List<Map> getOrderRes = mapper.readValue(res, List.class);
-            List<GetOrdersRes>  resList =  BeanMapper.mapList( getOrderRes,GetOrdersRes.class);
-            return  resList;
+            List<GetOrdersRes> resList = BeanMapper.mapList(getOrderRes, GetOrdersRes.class);
+            return resList;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("(新)获取多个委托买单或卖单，每次请求返回pageSize<100条记录  出错");

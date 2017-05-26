@@ -30,7 +30,7 @@ public class TradeTasks {
   TradeService tradeService;
   @Resource
   UserRepostiory userRepostiory;
-  @Scheduled(fixedRate = 2000)
+ /* @Scheduled(fixedRate = 1000)
   public void listTrade_ETC() {
    List<User> userList =  userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
     userList.forEach(user -> {
@@ -39,7 +39,7 @@ public class TradeTasks {
 
     });
 
-  }
+  }*/
   @Scheduled(fixedRate = 2000)
   public void listTrade_LTC() {
     List<User> userList =  userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());

@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 
+import com.licc.trade.domain.OrderNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -41,7 +43,7 @@ import com.licc.trade.util.TradeUtil;
  * @see
  */
 @Service
-@Transactional()
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public class TradeService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
@@ -51,11 +53,13 @@ public class TradeService {
 
     @Resource
     IChbtcApiService chbtcApiService;
-
+    @Resource
+    OrderNumberService orderNumberService;
     /**
      * @param tradeCurrency 币种类型
      * @param user          用户
      */
+
     public void execute(ETradeCurrency tradeCurrency, User user) {
         // 根据币种和用户查询配置信息
         ParamConfig config = configRepostiory.findOneByUserIdAndCurrencyAndDeleteFlag(user.getId(), tradeCurrency.getValue(),
@@ -66,6 +70,9 @@ public class TradeService {
         }
         // 查询当前行情数据
         TickerApiRes tickerApiRes = chbtcApiService.ticker(tradeCurrency);
+
+
+
         // 更新当前订单状态
         updateOrderStatus(tradeCurrency, user);
         // 买入委托订单
@@ -239,12 +246,16 @@ public class TradeService {
                     + ")差值需要大于" + config.getSellBuyDiff());
             return;
         }
-
+         //获取买单数量
+        List<OrderNumber> orderNumbers = orderNumberService.listByUserIdAndCurrency(user.getId(),tradeCurrency.getValue());
+        int buyNumber = TradeUtil.getBuyNumber(tickerApiRes.getTicker().getHigh(),ticker_buy,orderNumbers);
+        logger.info( "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "买单数量：" +buyNumber);
         // 委托买单
         String buyPrice = TradeUtil.getBuyPrice(tickerApiRes.getTicker().getBuy());
+
         OrderReq orderReq = new OrderReq();
         orderReq.setPrice(buyPrice);
-        orderReq.setAmount(String.valueOf(config.getBuyNumber()));
+        orderReq.setAmount(String.valueOf(buyNumber));
         orderReq.setTradeCurrency(tradeCurrency);
         orderReq.setTradeOrderType(ETradeOrderType.ORDER_BUY);
         orderReq.setAccessKey(user.getAccessKey());
@@ -252,7 +263,7 @@ public class TradeService {
         OrderRes orderRes = chbtcApiService.order(orderReq);
         if (ETradeResStatus.SUCCESS.getKey().equals(orderRes.getCode())) {// 卖出委托成功
             TradeOrder tradeOrder = new TradeOrder();
-            tradeOrder.setBuyNumber(String.valueOf(config.getBuyNumber()));
+            tradeOrder.setBuyNumber(String.valueOf(buyNumber));
             tradeOrder.setBuyPrice(buyPrice);
             tradeOrder.setBuyOrderId(orderRes.getId());
             tradeOrder.setBuyStatus(ETradeOrderStatus.WAIT.getKey());
