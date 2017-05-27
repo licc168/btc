@@ -24,6 +24,10 @@ public class OrderNumber {
     private String hightBuyStart;
     @Column(name="hight_buy_end")
     private String hightBuyEnd;
+    @Column(name = "subtract_price")
+    private String subtractPrice;
+
+
     public Long getId() {
         return id;
     }
@@ -78,5 +82,13 @@ public class OrderNumber {
 
     public void setHightBuyEnd(String hightBuyEnd) {
         this.hightBuyEnd = hightBuyEnd;
+    }
+
+    public String getSubtractPrice() {
+        return subtractPrice;
+    }
+
+    public void setSubtractPrice(String subtractPrice) {
+        this.subtractPrice = subtractPrice;
     }
 }

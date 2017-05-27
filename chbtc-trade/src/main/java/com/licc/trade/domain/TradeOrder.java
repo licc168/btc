@@ -43,6 +43,9 @@ public class TradeOrder {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "subtract_price")
+    private String subtractPrice;
+
 
     public Long getId() {
         return id;
@@ -148,5 +151,13 @@ public class TradeOrder {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getSubtractPrice() {
+        return subtractPrice;
+    }
+
+    public void setSubtractPrice(String subtractPrice) {
+        this.subtractPrice = subtractPrice;
     }
 }

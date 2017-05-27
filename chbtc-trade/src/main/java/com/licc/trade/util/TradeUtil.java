@@ -52,26 +52,26 @@ public class TradeUtil {
 
     public static String getBuyPrice(String sell) {
         BigDecimal price = new BigDecimal(sell);
-        return price.add(new BigDecimal("0.01")).toString();
+        return price.add(new BigDecimal("0.11")).toString();
 
     }
 
-    public static Integer getBuyNumber(String hight, String curreyBuyPrice, List<OrderNumber> list) {
+    public static OrderNumber getBuyNumber(String hight, String curreyBuyPrice, List<OrderNumber> list) {
         BigDecimal hightD = new BigDecimal(hight);
         BigDecimal curreyBuyPriceD = new BigDecimal(curreyBuyPrice);
         BigDecimal diff = hightD.subtract(curreyBuyPriceD);
-         int buyNumber = 1;
+          OrderNumber orderNumberRes = null;
         for(OrderNumber orderNumber:list) {
             String start = orderNumber.getHightBuyStart();
             String end = orderNumber.getHightBuyEnd();
             BigDecimal startD = new BigDecimal(start);
             BigDecimal endD = new BigDecimal(end);
             if (diff.compareTo(startD)>0&& endD.compareTo(diff) >= 0) {
-                buyNumber = orderNumber.getOrderNumber();
-                break;
+              orderNumberRes = orderNumber;
+              break;
             }
         }
-        return buyNumber;
+        return orderNumberRes;
 
     }
 

@@ -43,8 +43,7 @@ public class ParamConfig {
     @Column(name = "max_buy_number")
     private Long maxBuyNumber;// 最大委托笔数
 
-    @Column(name = "buy_number")
-    private String buyNumber;   // 单笔买入个数
+
 
 
 
@@ -107,13 +106,7 @@ public class ParamConfig {
         this.maxBuyNumber = maxBuyNumber;
     }
 
-    public String getBuyNumber() {
-        return buyNumber;
-    }
 
-    public void setBuyNumber(String buyNumber) {
-        this.buyNumber = buyNumber;
-    }
 
     public Long getBuyOverTime() {
         return buyOverTime;

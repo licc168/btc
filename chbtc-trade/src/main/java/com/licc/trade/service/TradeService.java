@@ -1,5 +1,7 @@
 package com.licc.trade.service;
 
+import com.licc.btc.chbtcapi.req.GetOrderReq;
+import com.licc.btc.chbtcapi.res.order.GetOrderRes;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +72,7 @@ public class TradeService {
         }
         // 查询当前行情数据
         TickerApiRes tickerApiRes = chbtcApiService.ticker(tradeCurrency);
-
+         if(tickerApiRes == null)return;
 
 
         // 更新当前订单状态
@@ -85,7 +87,7 @@ public class TradeService {
 
     // 取消超时买入订单
     void cancelOverTimeOrder(ETradeCurrency tradeCurrency, User user, ParamConfig config) {
-        List<Integer> buyStatusList = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey());
+        List<Integer> buyStatusList = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey(),ETradeOrderStatus.WAIT_NO.getKey());
         List<TradeOrder> tradeOrderList = tradeOrderRepostiory.findByUserIdAndCurrencyAndBuyStatusIn(user.getId(), tradeCurrency.getValue(),
                 buyStatusList);
         if (CollectionUtils.isEmpty(tradeOrderList))
@@ -111,12 +113,12 @@ public class TradeService {
     }
 
     void updateOrderStatus(ETradeCurrency tradeCurrency, User user) {
-        GetOrdersNewReq req = new GetOrdersNewReq();
+       /* GetOrdersNewReq req = new GetOrdersNewReq();
         req.setCurrency(tradeCurrency);
         req.setAccessKey(user.getAccessKey());
         req.setSecretKey(user.getSecretKey());
         req.setPageIndex(0);
-        req.setPageSize(3);
+        req.setPageSize(20);
         // 更新买单状态
         req.setOrderType(ETradeOrderType.ORDER_BUY);
         List<GetOrdersRes> buyList = chbtcApiService.getOrdersNew(req);
@@ -144,8 +146,45 @@ public class TradeService {
                 }
             });
 
+        }*/
+        List<Integer> buyStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey(), ETradeOrderStatus.WAIT.getKey(),
+            ETradeOrderStatus.WAIT_NO.getKey());
+        List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey(), ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey(),
+            ETradeOrderStatus.WAIT_NO.getKey());
+        List<TradeOrder> tradeOrders = tradeOrderRepostiory.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(
+            user.getId(), tradeCurrency.getValue(), buyStatus, user.getId(), tradeCurrency.getValue(), sellStatus);
+        if (CollectionUtils.isEmpty(tradeOrders)) {
+            logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "更新订单状态 》》未完成或者未取消的订单为空 ");
+            return;
         }
-
+        tradeOrders.forEach(tradeOrder -> {
+            GetOrderReq getOrderReq = new GetOrderReq();
+            getOrderReq.setTradeCurrency(tradeCurrency);
+            getOrderReq.setAccessKey(user.getAccessKey());
+            getOrderReq.setSecretKey(user.getSecretKey());
+            // 修改委托买单的状态\
+            if (tradeOrder.getBuyOrderId() != null) {
+                getOrderReq.setId(tradeOrder.getBuyOrderId());
+                    if (ETradeOrderStatus.SUCCESS.getKey()!=tradeOrder.getBuyStatus().intValue()&&ETradeOrderStatus.CANCEL.getKey()!=tradeOrder.getBuyStatus().intValue()) {
+                        GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
+                        if (orderRes != null) {
+                            tradeOrder.setBuyStatus(orderRes.getStatus());
+                            tradeOrderRepostiory.save(tradeOrder);
+                        }
+                    }
+            }
+            // 修改委托卖单的状态
+            if (tradeOrder.getSellOrderId() != null) {
+                if (ETradeOrderStatus.SUCCESS.getKey()!=tradeOrder.getSellStatus().intValue()&&ETradeOrderStatus.CANCEL.getKey()!=tradeOrder.getSellStatus().intValue()) {
+                    getOrderReq.setId(tradeOrder.getSellOrderId());
+                    GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
+                    if (orderRes != null) {
+                        tradeOrder.setSellStatus(orderRes.getStatus());
+                    }
+                    tradeOrderRepostiory.save(tradeOrder);
+                }
+            }
+        });
     }
 
     /**
@@ -172,7 +211,7 @@ public class TradeService {
             //boolean flag = TradeUtil.diffString(tickerApiRes.getTicker().getSell(), tradeOrder.getBuyPrice(), config.getOrderSellDiff());
             // if (flag) {
             // 当前卖出价格-随机数
-            String sellPrice = TradeUtil.getSellPriceByBuy(tradeOrder.getBuyPrice(),config.getOrderSellDiff());
+            String sellPrice = TradeUtil.getSellPriceByBuy(tradeOrder.getBuyPrice(),tradeOrder.getSubtractPrice());
             OrderReq orderReq = new OrderReq();
             orderReq.setPrice(sellPrice);
             orderReq.setAmount(tradeOrder.getBuyNumber());
@@ -248,35 +287,39 @@ public class TradeService {
         }
          //获取买单数量
         List<OrderNumber> orderNumbers = orderNumberService.listByUserIdAndCurrency(user.getId(),tradeCurrency.getValue());
-        int buyNumber = TradeUtil.getBuyNumber(tickerApiRes.getTicker().getHigh(),ticker_buy,orderNumbers);
-        logger.info( "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "买单数量：" +buyNumber);
+        OrderNumber orderNumber = TradeUtil.getBuyNumber(tickerApiRes.getTicker().getHigh(),ticker_buy,orderNumbers);
         // 委托买单
         String buyPrice = TradeUtil.getBuyPrice(tickerApiRes.getTicker().getBuy());
-
-        OrderReq orderReq = new OrderReq();
-        orderReq.setPrice(buyPrice);
-        orderReq.setAmount(String.valueOf(buyNumber));
-        orderReq.setTradeCurrency(tradeCurrency);
-        orderReq.setTradeOrderType(ETradeOrderType.ORDER_BUY);
-        orderReq.setAccessKey(user.getAccessKey());
-        orderReq.setSecretKey(user.getSecretKey());
-        OrderRes orderRes = chbtcApiService.order(orderReq);
-        if (ETradeResStatus.SUCCESS.getKey().equals(orderRes.getCode())) {// 卖出委托成功
-            TradeOrder tradeOrder = new TradeOrder();
-            tradeOrder.setBuyNumber(String.valueOf(buyNumber));
-            tradeOrder.setBuyPrice(buyPrice);
-            tradeOrder.setBuyOrderId(orderRes.getId());
-            tradeOrder.setBuyStatus(ETradeOrderStatus.WAIT.getKey());
-            tradeOrder.setUserId(user.getId());
-            tradeOrder.setCreateTime(new Date());
-            tradeOrder.setBuyFees("0");
-            tradeOrder.setCurrency(tradeCurrency.getValue());
-            tradeOrder.setSellStatus(ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey());
-            tradeOrderRepostiory.save(tradeOrder);
-        } else {
-            logger.info(
-                    "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "数量：" + config.getBuyNumber() + orderRes.getMessage());
-        }
-
+        String subtractPrice = orderNumber.getSubtractPrice();
+        Integer buyNumber =orderNumber.getOrderNumber();
+        logger.info( "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "买单数量：" +buyNumber);
+       if( buyNumber>0) {
+           OrderReq orderReq = new OrderReq();
+           orderReq.setPrice(buyPrice);
+           orderReq.setAmount(String.valueOf(buyNumber));
+           orderReq.setTradeCurrency(tradeCurrency);
+           orderReq.setTradeOrderType(ETradeOrderType.ORDER_BUY);
+           orderReq.setAccessKey(user.getAccessKey());
+           orderReq.setSecretKey(user.getSecretKey());
+           OrderRes orderRes = chbtcApiService.order(orderReq);
+           if (ETradeResStatus.SUCCESS.getKey().equals(orderRes.getCode())) {// 卖出委托成功
+               TradeOrder tradeOrder = new TradeOrder();
+               tradeOrder.setBuyNumber(String.valueOf(buyNumber));
+               tradeOrder.setBuyPrice(buyPrice);
+               tradeOrder.setBuyOrderId(orderRes.getId());
+               tradeOrder.setBuyStatus(ETradeOrderStatus.WAIT.getKey());
+               tradeOrder.setUserId(user.getId());
+               tradeOrder.setCreateTime(new Date());
+               tradeOrder.setBuyFees("0");
+               tradeOrder.setSubtractPrice(subtractPrice);
+               tradeOrder.setCurrency(tradeCurrency.getValue());
+               tradeOrder.setSellStatus(ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey());
+               tradeOrderRepostiory.save(tradeOrder);
+           } else {
+               logger.info(
+                   "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "数量："
+                       + buyNumber + orderRes.getMessage());
+           }
+       }
     }
 }
