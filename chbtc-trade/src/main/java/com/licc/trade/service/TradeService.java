@@ -57,6 +57,8 @@ public class TradeService {
     IChbtcApiService chbtcApiService;
     @Resource
     OrderNumberService orderNumberService;
+    @Resource
+    TradeOrderService tradeOrderService;
     /**
      * @param tradeCurrency 币种类型
      * @param user          用户
@@ -151,7 +153,7 @@ public class TradeService {
             ETradeOrderStatus.WAIT_NO.getKey());
         List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey(), ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey(),
             ETradeOrderStatus.WAIT_NO.getKey());
-        List<TradeOrder> tradeOrders = tradeOrderRepostiory.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(
+        List<TradeOrder> tradeOrders = tradeOrderService.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(
             user.getId(), tradeCurrency.getValue(), buyStatus, user.getId(), tradeCurrency.getValue(), sellStatus);
         if (CollectionUtils.isEmpty(tradeOrders)) {
             logger.info("用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "更新订单状态 》》未完成或者未取消的订单为空 ");
@@ -225,7 +227,7 @@ public class TradeService {
                 tradeOrder.setSellStatus(ETradeOrderStatus.WAIT.getKey());
                 tradeOrder.setSellPrice(sellPrice);
                 tradeOrder.setBuyFees("0");
-                tradeOrderRepostiory.save(tradeOrder);
+                tradeOrderService.save(tradeOrder);
             }
 
         });
@@ -264,7 +266,7 @@ public class TradeService {
         }
         // 判断当前价格与上一个委托价格差是不是小于设定值 如果是则不进行买卖交易
 
-        String lastPrice = tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(user.getId(), tradeCurrency.getValue());
+        String lastPrice = tradeOrderService.getLastPriceByUserIdAndCurrency(user.getId(), tradeCurrency.getValue());
         if (!StringUtils.isEmpty(lastPrice)) {
             if (config.getDownBuyEnable()) {// 开关
                 flag = TradeUtil.diffString(lastPrice, tickerApiRes.getTicker().getBuy(), config.getDownBuy());
@@ -314,7 +316,7 @@ public class TradeService {
                tradeOrder.setSubtractPrice(subtractPrice);
                tradeOrder.setCurrency(tradeCurrency.getValue());
                tradeOrder.setSellStatus(ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey());
-               tradeOrderRepostiory.save(tradeOrder);
+               tradeOrderService.save(tradeOrder);
            } else {
                logger.info(
                    "用户：" + user.getUserName() + " 币种：" + tradeCurrency.getValue() + "数量："

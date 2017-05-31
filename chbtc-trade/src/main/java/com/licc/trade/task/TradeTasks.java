@@ -40,7 +40,7 @@ public class TradeTasks {
     });
 
   }*/
-  @Scheduled(fixedRate = 1000)
+  @Scheduled(fixedRate = 500)
   public void listTrade_LTC() {
     List<User> userList =  userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
     userList.forEach(user -> {

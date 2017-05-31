@@ -30,27 +30,12 @@ import com.licc.trade.Application;
 public class TestTradeOrder {
     @Resource
     TradeOrderRepostiory tradeOrderRepostiory;
-  @Resource
-  ParamConfigRepostiory configRepostiory;
+
 
     @Test
     public void test() {
-     /* List<Integer> buyStatus = Lists
-          .newArrayList(ETradeOrderStatus.SUCCESS.getKey());
-      List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.WAIT.getKey(), ETradeOrderStatus.BUY_SUCCESS_NO_SELL.getKey(),
-          ETradeOrderStatus.WAIT_NO.getKey());*/
-     /*List<TradeOrder>  list = tradeOrderRepostiory.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(1L, ETradeCurrency.LTC_CNY.getValue(),buyStatus,1L, ETradeCurrency.LTC_CNY.getValue(),sellStatus);
-      System.out.println(list);
-*/
-
-
-    /*  List<Integer> buyStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey());
-      List<Integer> sellStatus = Lists.newArrayList(ETradeOrderStatus.SUCCESS.getKey());
-      Long sellNum = tradeOrderRepostiory.countByUserIdAndCurrencyAndBuyStatusInAndSellStatusNotIn(1L, ETradeCurrency.LTC_CNY.getValue(),
-          buyStatus, sellStatus);*/
-
-
     String list =  tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(1L,ETradeCurrency.LTC_CNY.getValue());
+      System.out.println(list);
     }
 
 }
