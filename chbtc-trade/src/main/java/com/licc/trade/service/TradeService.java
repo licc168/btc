@@ -107,7 +107,7 @@ public class TradeService {
                 chbtcApiService.cancelOrder(cancelOrderReq);
                 tradeOrder.setBuyStatus(ETradeOrderStatus.CANCEL.getKey());
                 tradeOrder.setSellStatus(ETradeOrderStatus.CANCEL.getKey());
-                tradeOrderRepostiory.save(tradeOrder);
+                tradeOrderService.save(tradeOrder);
             }
 
         });
@@ -171,7 +171,7 @@ public class TradeService {
                         GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
                         if (orderRes != null) {
                             tradeOrder.setBuyStatus(orderRes.getStatus());
-                            tradeOrderRepostiory.save(tradeOrder);
+                            tradeOrderService.save(tradeOrder);
                         }
                     }
             }
@@ -183,7 +183,7 @@ public class TradeService {
                     if (orderRes != null) {
                         tradeOrder.setSellStatus(orderRes.getStatus());
                     }
-                    tradeOrderRepostiory.save(tradeOrder);
+                    tradeOrderService.save(tradeOrder);
                 }
             }
         });
