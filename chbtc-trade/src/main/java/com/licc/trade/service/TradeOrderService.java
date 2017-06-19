@@ -1,6 +1,7 @@
 package com.licc.trade.service;
 
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
@@ -29,13 +30,12 @@ public class TradeOrderService {
     public String getLastPriceByUserIdAndCurrency(Long userId, String currency) {
         return repostiory.getLastPriceByUserIdAndCurrency(userId, currency);
     }
-  @Cacheable(value = "guavaCache", key = "#userId+#currency+#sellStatus+#buyStatus")
-  public  List<TradeOrder>   findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(Long userId, String currency,
-      List<Integer> buyStatus, Long id, String cur, List<Integer> sellStatus){
-    return repostiory.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(userId,currency,buyStatus,id,cur,sellStatus);
-  }
-  @CacheEvict(value="guavaCache",key="#order.userId + #order.currency")
-  public void save(TradeOrder order) {
+    public  List<TradeOrder>   findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(Long userId, String currency,
+        List<Integer> buyStatus, Long id, String cur, List<Integer> sellStatus){
+        return repostiory.findByUserIdAndCurrencyAndBuyStatusInOrUserIdAndCurrencyAndSellStatusIn(userId,currency,buyStatus,id,cur,sellStatus);
+    }
+    @CacheEvict(value="guavaCache",key="#order.userId + #order.currency")
+    public void save(TradeOrder order) {
         repostiory.save(order);
     }
 }

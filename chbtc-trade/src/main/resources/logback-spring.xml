@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <include resource="org/springframework/boot/logging/logback/base.xml" />
-  <logger name="sample.logback" level="INFO" />
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
+  <logger level="INFO" name="sample.logback"/>
   <springProfile name="test,dev">
-    <logger name="org.springframework.web" level="INFO"/>
-    <logger name="org.springboot.sample" level="INFO" />
-    <logger name="com.kfit" level="info" />
+    <logger level="INFO" name="org.springframework.web"/>
+    <logger level="INFO" name="org.springboot.sample"/>
+    <logger level="info" name="com.kfit"/>
   </springProfile>
 
 
   <!-- 生产环境. -->
   <springProfile name="prod">
-    <logger name="org.springframework.web" level="ERROR"/>
-    <logger name="org.springboot.sample" level="ERROR" />
-    <logger name="com.kfit" level="ERROR" />
+    <logger level="ERROR" name="org.springframework.web"/>
+    <logger level="ERROR" name="org.springboot.sample"/>
+    <logger level="ERROR" name="com.kfit"/>
   </springProfile>
 </configuration>

@@ -15,39 +15,34 @@ public class ParamConfig {
     private Long    id;
 
     @Column(name = "currency")
-    private String  currency;    // 币种
+    private String  currency;      // 币种
 
     @Column(name = "user_id")
-    private Long userId;
+    private Long    userId;
 
     @Column(name = "hight_buy_diff")
-    private String  hightBuyDiff;     // 最高价与买入价格差
+    private String  hightBuyDiff;  // 最高价与买入价格差
 
     @Column(name = "sell_buy_diff")
-    private String  sellBuyDiff;    // 卖与买的价格差
+    private String  sellBuyDiff;   // 卖与买的价格差
 
-    @Column(name = "order_sell_diff")
-    private String  orderSellDiff;     // 订单价格与卖的价格差
+    @Column(name = "order_sell_price")
+    private String  orderSellPrice; // 订单价格与卖的价格差
 
     @Column(name = "buy_over_time")
 
-    private  Long buyOverTime;//买单超时时间
-
+    private Long    buyOverTime;   // 买单超时时间
 
     @Column(name = "down_buy")
-    private String  downBuy;//价格降低参数
+    private String  downBuy;       // 价格降低参数
 
     @Column(name = "down_buy_enable")
-    private Boolean  downBuyEnable;//价格降低参数
+    private Boolean downBuyEnable; // 价格降低参数
 
     @Column(name = "max_buy_number")
-    private Long maxBuyNumber;// 最大委托笔数
+    private Long    maxBuyNumber;  // 最大委托笔数
 
-
-
-
-
-    @Column(name ="delete_flag")
+    @Column(name = "delete_flag")
     private Integer deleteFlag;
 
     public Long getId() {
@@ -90,12 +85,12 @@ public class ParamConfig {
         this.sellBuyDiff = sellBuyDiff;
     }
 
-    public String getOrderSellDiff() {
-        return orderSellDiff;
+    public String getOrderSellPrice() {
+        return orderSellPrice;
     }
 
-    public void setOrderSellDiff(String orderSellDiff) {
-        this.orderSellDiff = orderSellDiff;
+    public void setOrderSellPrice(String orderSellPrice) {
+        this.orderSellPrice = orderSellPrice;
     }
 
     public Long getMaxBuyNumber() {
@@ -105,8 +100,6 @@ public class ParamConfig {
     public void setMaxBuyNumber(Long maxBuyNumber) {
         this.maxBuyNumber = maxBuyNumber;
     }
-
-
 
     public Long getBuyOverTime() {
         return buyOverTime;

@@ -1,8 +1,8 @@
 package com.licc.trade.repostiory;
 
-import com.licc.trade.domain.Ticker;
-import com.licc.trade.domain.TradeOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.licc.trade.domain.Ticker;
 
 /**
  * @author lichangchao
@@ -11,5 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @see
  */
 public interface TickerRepostiory extends JpaRepository<Ticker, Long> {
-  Long  countByCurrencyAndBuyAndSellAndHighAndLowAndLastAndVol(String currency,String buy,String sell,String high,String low,String last,String vol);
+    Long countByCurrencyAndBuyAndSellAndHighAndLowAndLastAndVol(String currency, String buy, String sell, String high, String low,
+            String last, String vol);
 }

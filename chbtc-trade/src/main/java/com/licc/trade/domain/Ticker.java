@@ -1,6 +1,7 @@
 package com.licc.trade.domain;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,16 +22,16 @@ import javax.persistence.Table;
 public class Ticker {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long   id;
 
     @Column(name = "currency")
     private String currency;
 
     @Column(name = "time_long")
-    private Long timeLong;
+    private Long   timeLong;
 
     @Column(name = "time_date")
-    private Date timeDate;
+    private Date   timeDate;
 
     @Column(name = "high")
     private String high;
@@ -46,9 +47,8 @@ public class Ticker {
     @Column(name = "sell")
     private String sell;
 
-
     @Column(name = "create_time")
-    private Date createTime;
+    private Date   createTime;
 
     public Long getId() {
         return id;
@@ -58,7 +58,6 @@ public class Ticker {
         this.id = id;
     }
 
-
     public Long getTimeLong() {
         return timeLong;
     }
@@ -66,7 +65,6 @@ public class Ticker {
     public void setTimeLong(Long timeLong) {
         this.timeLong = timeLong;
     }
-
 
     public Date getCreateTime() {
         return createTime;

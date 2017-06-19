@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(basePackages ="com.licc")
+@ComponentScan(basePackages = "com.licc")
 @EnableTransactionManagement
 @EnableCaching
 public class Application {

@@ -1,10 +1,12 @@
 package com.licc.trade.domain;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
 @Entity
 @Table(name = "user")
 public class User {
@@ -12,12 +14,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long    id;
     @Column(name = "user_name")
-    private String userName;
+    private String  userName;
     @Column(name = "access_key")
     private String  accessKey;
     @Column(name = "secret_key")
     private String  secretKey;
-    @Column(name ="delete_flag")
+    @Column(name = "delete_flag")
     private Integer deleteFlag;
 
     public Long getId() {

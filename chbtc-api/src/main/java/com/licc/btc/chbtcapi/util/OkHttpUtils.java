@@ -27,7 +27,7 @@ import okhttp3.Response;
  */
 public class OkHttpUtils {
     private static final OkHttpClient mOkHttpClient = new OkHttpClient();
-    private static final String CHARSET_NAME = "UTF-8";
+    private static final String       CHARSET_NAME  = "UTF-8";
 
     /**
      * 该不会开启异步线程。
@@ -117,10 +117,8 @@ public class OkHttpUtils {
 
     /**
      *
-     * @param urlAll
-     *            :请求接口
-     * @param charset
-     *            :字符编码
+     * @param urlAll :请求接口
+     * @param charset :字符编码
      * @return 返回json结果
      */
     public static String get(String urlAll, String charset) {
@@ -130,8 +128,7 @@ public class OkHttpUtils {
         String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";// 模拟浏览器
         try {
             URL url = new URL(urlAll);
-            HttpURLConnection connection = (HttpURLConnection) url
-                .openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setReadTimeout(30000);
             connection.setConnectTimeout(30000);

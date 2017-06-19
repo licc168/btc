@@ -1,10 +1,11 @@
 package com.licc.trade.repostiory;
 
+import java.util.List;
 
-import com.licc.trade.domain.OrderNumber;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-public interface  OrderNumberRepostiory extends JpaRepository<OrderNumber, Long> {
-      List<OrderNumber> findByUserIdAndCurrency(Long userId, String currency);
+import com.licc.trade.domain.OrderNumber;
+
+public interface OrderNumberRepostiory extends JpaRepository<OrderNumber, Long> {
+    List<OrderNumber> findByUserIdAndCurrency(Long userId, String currency);
 }

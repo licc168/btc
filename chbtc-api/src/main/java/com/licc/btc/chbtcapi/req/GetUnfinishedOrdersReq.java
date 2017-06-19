@@ -1,7 +1,6 @@
 package com.licc.btc.chbtcapi.req;
 
 import com.licc.btc.chbtcapi.enums.ETradeCurrency;
-import com.licc.btc.chbtcapi.req.AccountReq;
 
 /**
  * 获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录 请求参数

@@ -1,6 +1,5 @@
 package com.licc.btc.chbtcapi.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.licc.btc.chbtcapi.enums.ETradeCurrency;

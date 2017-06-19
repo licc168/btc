@@ -22,13 +22,14 @@ public class Collections3 {
     /**
      * LIST 对象转化成String
      *
-     * @param list      目标对象
-     * @param clumName  对象里面的字段名称
+     * @param list 目标对象
+     * @param clumName 对象里面的字段名称
      * @param separator 分隔符
      * @return
      */
     public static <T> String transListToString(List<T> list, final String clumName, String separator) {
-        if (CollectionUtils.isEmpty(list)) return "";
+        if (CollectionUtils.isEmpty(list))
+            return "";
         Function<Object, String> trans = new Function<Object, String>() {
             @Override
             public String apply(Object obj) {
@@ -54,7 +55,8 @@ public class Collections3 {
      * @return
      */
     public static <T> List<T> transStringToList(String target, String separator) {
-        if (StringUtils.isEmpty(target)) return Collections.EMPTY_LIST;
+        if (StringUtils.isEmpty(target))
+            return Collections.EMPTY_LIST;
         List<T> retList = new ArrayList<>();
         List<String> list = Splitter.on(separator).trimResults().splitToList(target);
         for (String s : list) {
@@ -72,7 +74,8 @@ public class Collections3 {
      * @return
      */
     public static Long[] transStringToArray(String target, String separator) {
-        if (StringUtils.isEmpty(target)) return null;
+        if (StringUtils.isEmpty(target))
+            return null;
         String[] ss = target.split(separator);
         Long[] ls = new Long[ss.length];
         for (int i = 0; i < ss.length; i++) {
@@ -83,12 +86,13 @@ public class Collections3 {
 
     /**
      * @param targetList 目标list
-     * @param start      截取开始的位置
-     * @param end        截取结束的位置
+     * @param start 截取开始的位置
+     * @param end 截取结束的位置
      * @return List<T>
      */
     public static <T> List<T> subList(List<T> targetList, int start, int end) {
-        if (CollectionUtils.isEmpty(targetList)) return Collections.EMPTY_LIST;
+        if (CollectionUtils.isEmpty(targetList))
+            return Collections.EMPTY_LIST;
         List<T> list = new ArrayList<T>(end - start);
         int i = 0;
         for (T t : targetList) {
@@ -101,12 +105,12 @@ public class Collections3 {
     }
 
     /**
-     * @param targetList 目标list
-     *                   顺序去掉重复
+     * @param targetList 目标list 顺序去掉重复
      * @return List<T>
      */
     public static <T> List<T> deleteRepeat(List<T>... targetList) {
-        if (targetList == null) return Collections.EMPTY_LIST;
+        if (targetList == null)
+            return Collections.EMPTY_LIST;
         List list = new ArrayList();
         for (int i = 0; i < targetList.length; i++) {
             List<T> tList = targetList[i];

@@ -14,38 +14,37 @@ import javax.persistence.Table;
 public class TradeOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long    id;
     @Column(name = "create_time")
-    private Date createTime;
+    private Date    createTime;
     @Column(name = "currency")
-    private String currency;
+    private String  currency;
 
     @Column(name = "buy_number")
-    private String buyNumber;
+    private String  buyNumber;
     @Column(name = "buy_order_id")
-    private String buyOrderId;
+    private String  buyOrderId;
     @Column(name = "buy_price")
-    private String buyPrice;
+    private String  buyPrice;
     @Column(name = "buy_fees")
-    private String buyFees;
-    //status : 买单状态(0：待成交,1：取消,2：交易完成)
+    private String  buyFees;
+    // status : 买单状态(0：待成交,1：取消,2：交易完成)
     @Column(name = "buy_status")
     private Integer buyStatus;
     @Column(name = "sell_order_id")
-    private String sellOrderId;
+    private String  sellOrderId;
     @Column(name = "sell_price")
-    private String sellPrice;
+    private String  sellPrice;
     @Column(name = "sell_fees")
-    private String sellFees;
-    //status : 卖单状态(0：待成交,1：取消,2：交易完成，4：委托失敗)
+    private String  sellFees;
+    // status : 卖单状态(0：待成交,1：取消,2：交易完成，4：委托失敗)
     @Column(name = "sell_status")
     private Integer sellStatus;
     @Column(name = "user_id")
-    private Long userId;
+    private Long    userId;
 
     @Column(name = "subtract_price")
-    private String subtractPrice;
-
+    private String  subtractPrice;
 
     public Long getId() {
         return id;
@@ -102,8 +101,6 @@ public class TradeOrder {
     public void setBuyFees(String buyFees) {
         this.buyFees = buyFees;
     }
-
-
 
     public String getSellOrderId() {
         return sellOrderId;

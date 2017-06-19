@@ -1,6 +1,11 @@
 package com.licc.trade.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "order_number")
@@ -9,24 +14,23 @@ public class OrderNumber {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long    id;
     @Column(name = "order_number")
-    private Integer  orderNumber;    // 币种
+    private Integer orderNumber;  // 币种
 
     @Column(name = "currency")
-    private String  currency;    // 币种
+    private String  currency;     // 币种
 
     @Column(name = "user_id")
-    private Long userId;
+    private Long    userId;
 
     @Column(name = "order_type")
     private Integer orderType;
 
-    @Column(name="hight_buy_start")
-    private String hightBuyStart;
-    @Column(name="hight_buy_end")
-    private String hightBuyEnd;
+    @Column(name = "hight_buy_start")
+    private String  hightBuyStart;
+    @Column(name = "hight_buy_end")
+    private String  hightBuyEnd;
     @Column(name = "subtract_price")
-    private String subtractPrice;
-
+    private String  subtractPrice;
 
     public Long getId() {
         return id;

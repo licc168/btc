@@ -8,17 +8,17 @@ package com.licc.btc.chbtcapi.res.order;
  * @see
  */
 public class GetOrdersRes {
-    private String currency;
-    private String id;
-    private String price;
+    private String  currency;
+    private String  id;
+    private String  price;
     private Integer status;
-    private String total_amount;
-    private String trade_amount;
-    private String trade_price;
-    private String trade_date;
-    private String trade_money;
-    private String type;
-    private String fees;
+    private String  total_amount;
+    private String  trade_amount;
+    private String  trade_price;
+    private String  trade_date;
+    private String  trade_money;
+    private String  type;
+    private String  fees;
 
     public String getCurrency() {
         return currency;

@@ -10,8 +10,7 @@ public class Consts {
     public static final String Chbtc_Trade_CancelOrder = "cancelOrder";                        // 取消委托
     public static final String Chbtc_Trade_AccountInfo = "getAccountInfo";                     // 获取用户基本信息
     public static final String Chbtc_Trade_GetOrder    = "getOrder";                           // 获取用户基本信息
-    public static final String Chbtc_Unfinished_Orders    = "getUnfinishedOrdersIgnoreTradeType";  //获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录
-    public static final String Chbtc_Get_Orders_New    = "getOrdersNew";  //获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录
-
+    public static final String Chbtc_Unfinished_Orders = "getUnfinishedOrdersIgnoreTradeType"; // 获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录
+    public static final String Chbtc_Get_Orders_New    = "getOrdersNew";                       // 获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录
 
 }

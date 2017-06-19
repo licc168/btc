@@ -1,15 +1,10 @@
 package com.licc.trade.util;
 
-import com.google.common.collect.Lists;
-import com.licc.btc.chbtcapi.enums.ETradeOrderStatus;
-import com.licc.btc.chbtcapi.enums.ETradeOrderType;
-import com.licc.trade.domain.OrderNumber;
-import com.licc.trade.domain.TradeOrder;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.licc.trade.domain.OrderNumber;
 
 /**
  * @author 李长超
@@ -42,7 +37,6 @@ public class TradeUtil {
 
     }
 
-
     public static String getSellPriceByBuy(String buyPrice, String orderSellDiff) {
         BigDecimal buyPriceBD = new BigDecimal(buyPrice);
         BigDecimal orderSellBD = new BigDecimal(orderSellDiff);
@@ -60,15 +54,15 @@ public class TradeUtil {
         BigDecimal hightD = new BigDecimal(hight);
         BigDecimal curreyBuyPriceD = new BigDecimal(curreyBuyPrice);
         BigDecimal diff = hightD.subtract(curreyBuyPriceD);
-          OrderNumber orderNumberRes = null;
-        for(OrderNumber orderNumber:list) {
+        OrderNumber orderNumberRes = null;
+        for (OrderNumber orderNumber : list) {
             String start = orderNumber.getHightBuyStart();
             String end = orderNumber.getHightBuyEnd();
             BigDecimal startD = new BigDecimal(start);
             BigDecimal endD = new BigDecimal(end);
-            if (diff.compareTo(startD)>0&& endD.compareTo(diff) >= 0) {
-              orderNumberRes = orderNumber;
-              break;
+            if (diff.compareTo(startD) > 0 && endD.compareTo(diff) >= 0) {
+                orderNumberRes = orderNumber;
+                break;
             }
         }
         return orderNumberRes;
@@ -76,21 +70,25 @@ public class TradeUtil {
     }
 
     public static void main(String arge[]) {
-   OrderNumber orderNumber1 =  new OrderNumber();
+      /*  OrderNumber orderNumber1 = new OrderNumber();
         orderNumber1.setHightBuyStart("0");
         orderNumber1.setHightBuyEnd("10");
         orderNumber1.setOrderNumber(10);
-        OrderNumber orderNumber2 =  new OrderNumber();
+        OrderNumber orderNumber2 = new OrderNumber();
         orderNumber2.setHightBuyStart("10");
         orderNumber2.setHightBuyEnd("15");
         orderNumber2.setOrderNumber(15);
-        OrderNumber orderNumber3 =  new OrderNumber();
+        OrderNumber orderNumber3 = new OrderNumber();
         orderNumber3.setHightBuyStart("16");
         orderNumber3.setHightBuyEnd("999");
         orderNumber3.setOrderNumber(16);
 
-        List<OrderNumber> list = Lists.newArrayList(orderNumber1,orderNumber2,orderNumber3);
-        System.out.println(TradeUtil.getBuyNumber("143.09","133.08",list));
+        List<OrderNumber> list = Lists.newArrayList(orderNumber1, orderNumber2, orderNumber3);
+        System.out.println(TradeUtil.getBuyNumber("143.09", "133.08", list));*/
+
+      if(TradeUtil.diffString("123","12","0")){
+          System.out.println(123213);
+      }
 
     }
 }
