@@ -23,14 +23,14 @@ import com.licc.trade.Application;
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class TestTradeOrderService {
-  @Resource
-  TradeOrderService tradeOrderService;
+    @Resource
+    TradeOrderService tradeOrderService;
 
-  @Test
-  public  void testListByUserIdAndCurrency(){
-   String price =  tradeOrderService.getLastPriceByUserIdAndCurrency(1L,ETradeCurrency.LTC_CNY.getValue());
-    String price2 =  tradeOrderService.getLastPriceByUserIdAndCurrency(1L,ETradeCurrency.LTC_CNY.getValue());
+    @Test
+    public void testListByUserIdAndCurrency() {
+        String price = tradeOrderService.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
+        String price2 = tradeOrderService.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
 
-    System.out.println(price);
-  }
+        System.out.println(price);
+    }
 }

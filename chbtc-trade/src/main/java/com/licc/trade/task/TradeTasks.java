@@ -29,15 +29,15 @@ public class TradeTasks {
     @Resource
     UserRepostiory userRepostiory;
 
-  /*  @Scheduled(fixedRate = 1000)
-    public void listTrade_ETC() {
-        List<User> userList = userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
-        userList.forEach(user -> {
-            tradeService.execute(ETradeCurrency.ETC_CNY, user);
-
-        });
-
-    }*/
+//  @Scheduled(fixedRate = 1000)
+//    public void listTrade_ETC() {
+//        List<User> userList = userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
+//        userList.forEach(user -> {
+//            tradeService.execute(ETradeCurrency.ETC_CNY, user);
+//
+//        });
+//
+//    }
 
     @Scheduled(fixedDelay = 500)
     public void listTrade_LTC() {
