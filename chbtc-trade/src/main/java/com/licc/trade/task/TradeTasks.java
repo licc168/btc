@@ -43,7 +43,7 @@ public class TradeTasks {
     public void listTrade_LTC() {
         List<User> userList = userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
         userList.forEach(user -> {
-            tradeService.execute(ETradeCurrency.LTC_CNY, user);
+            tradeService.execute(ETradeCurrency.HSR_CNY, user);
 
         });
 
