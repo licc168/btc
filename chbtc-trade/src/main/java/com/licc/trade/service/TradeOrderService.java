@@ -13,7 +13,6 @@ import com.licc.trade.domain.TradeOrder;
 import com.licc.trade.repostiory.TradeOrderRepostiory;
 
 /**
- * Function:(这里用一句话描述这个类的作用)
  *
  * @author lichangchao
  * @version 1.0.0

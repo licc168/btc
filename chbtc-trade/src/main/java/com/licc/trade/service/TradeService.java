@@ -1,5 +1,6 @@
 package com.licc.trade.service;
 
+import com.licc.btc.chbtcapi.ChbtcApi;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,6 @@ import com.licc.btc.chbtcapi.req.OrderReq;
 import com.licc.btc.chbtcapi.res.order.GetOrderRes;
 import com.licc.btc.chbtcapi.res.order.OrderRes;
 import com.licc.btc.chbtcapi.res.ticker.TickerApiRes;
-import com.licc.btc.chbtcapi.service.IChbtcApiService;
 import com.licc.trade.domain.OrderNumber;
 import com.licc.trade.domain.ParamConfig;
 import com.licc.trade.domain.TradeOrder;
@@ -51,8 +51,7 @@ public class TradeService {
     @Resource
     TradeOrderRepostiory  tradeOrderRepostiory;
 
-    @Resource
-    IChbtcApiService      chbtcApiService;
+
     @Resource
     OrderNumberService    orderNumberService;
     @Resource
@@ -72,7 +71,7 @@ public class TradeService {
             return;
         }
         // 查询当前行情数据
-        TickerApiRes tickerApiRes = chbtcApiService.ticker(tradeCurrency);
+        TickerApiRes tickerApiRes = ChbtcApi.ticker(tradeCurrency);
         if (tickerApiRes == null)
             return;
 
@@ -103,7 +102,7 @@ public class TradeService {
                 cancelOrderReq.setTradeCurrency(tradeCurrency);
                 cancelOrderReq.setAccessKey(user.getAccessKey());
                 cancelOrderReq.setSecretKey(user.getSecretKey());
-                chbtcApiService.cancelOrder(cancelOrderReq);
+                ChbtcApi.cancelOrder(cancelOrderReq);
                 tradeOrder.setBuyStatus(ETradeOrderStatus.CANCEL.getKey());
                 tradeOrder.setSellStatus(ETradeOrderStatus.CANCEL.getKey());
                 tradeOrderService.save(tradeOrder);
@@ -135,7 +134,7 @@ public class TradeService {
                 getOrderReq.setId(tradeOrder.getBuyOrderId());
                 if (ETradeOrderStatus.SUCCESS.getKey() != tradeOrder.getBuyStatus().intValue()
                         && ETradeOrderStatus.CANCEL.getKey() != tradeOrder.getBuyStatus().intValue()) {
-                    GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
+                    GetOrderRes orderRes = ChbtcApi.getOrder(getOrderReq);
                     if (orderRes != null) {
                         tradeOrder.setBuyStatus(orderRes.getStatus());
                         tradeOrderService.save(tradeOrder);
@@ -147,7 +146,7 @@ public class TradeService {
                 if (ETradeOrderStatus.SUCCESS.getKey() != tradeOrder.getSellStatus().intValue()
                         && ETradeOrderStatus.CANCEL.getKey() != tradeOrder.getSellStatus().intValue()) {
                     getOrderReq.setId(tradeOrder.getSellOrderId());
-                    GetOrderRes orderRes = chbtcApiService.getOrder(getOrderReq);
+                    GetOrderRes orderRes = ChbtcApi.getOrder(getOrderReq);
                     if (orderRes != null) {
                         tradeOrder.setSellStatus(orderRes.getStatus());
                     }
@@ -196,7 +195,7 @@ public class TradeService {
             orderReq.setTradeOrderType(ETradeOrderType.ORDER_SELL);
             orderReq.setAccessKey(user.getAccessKey());
             orderReq.setSecretKey(user.getSecretKey());
-            OrderRes orderRes = chbtcApiService.order(orderReq);
+            OrderRes orderRes = ChbtcApi.order(orderReq);
             if (ETradeResStatus.SUCCESS.getKey().equals(orderRes.getCode())) {// 卖出委托成功
                 tradeOrder.setSellOrderId(orderRes.getId());
                 tradeOrder.setSellStatus(ETradeOrderStatus.WAIT.getKey());
@@ -278,7 +277,7 @@ public class TradeService {
             orderReq.setTradeOrderType(ETradeOrderType.ORDER_BUY);
             orderReq.setAccessKey(user.getAccessKey());
             orderReq.setSecretKey(user.getSecretKey());
-            OrderRes orderRes = chbtcApiService.order(orderReq);
+            OrderRes orderRes = ChbtcApi.order(orderReq);
             if (ETradeResStatus.SUCCESS.getKey().equals(orderRes.getCode())) {// 卖出委托成功
                 TradeOrder tradeOrder = new TradeOrder();
                 tradeOrder.setBuyNumber(String.valueOf(buyNumber));

@@ -28,7 +28,7 @@ public class TestTradeOrder {
 
     @Test
     public void test() {
-        String list = tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
+        String list = tradeOrderRepostiory.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.ZB_QC.getValue());
         System.out.println(list);
     }
 

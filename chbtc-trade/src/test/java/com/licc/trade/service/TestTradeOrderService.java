@@ -28,8 +28,8 @@ public class TestTradeOrderService {
 
     @Test
     public void testListByUserIdAndCurrency() {
-        String price = tradeOrderService.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
-        String price2 = tradeOrderService.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
+        String price = tradeOrderService.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.ZB_QC.getValue());
+        String price2 = tradeOrderService.getLastPriceByUserIdAndCurrency(1L, ETradeCurrency.ZB_QC.getValue());
 
         System.out.println(price);
     }

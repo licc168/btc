@@ -28,8 +28,8 @@ public class TestOrderNumberService {
 
     @Test
     public void testListByUserIdAndCurrency() {
-        orderNumberService.listByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
-        orderNumberService.listByUserIdAndCurrency(1L, ETradeCurrency.LTC_CNY.getValue());
+        orderNumberService.listByUserIdAndCurrency(1L, ETradeCurrency.ZB_QC.getValue());
+        orderNumberService.listByUserIdAndCurrency(1L, ETradeCurrency.ZB_QC.getValue());
 
     }
 }

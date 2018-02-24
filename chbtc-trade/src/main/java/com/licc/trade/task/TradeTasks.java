@@ -40,34 +40,13 @@ public class TradeTasks {
 //    }
 
     @Scheduled(fixedDelay = 500)
-    public void listTrade_LTC() {
+    public void listTrade_ZB() {
         List<User> userList = userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
         userList.forEach(user -> {
-            tradeService.execute(ETradeCurrency.HSR_CNY, user);
+            tradeService.execute(ETradeCurrency.ZB_QC, user);
 
         });
 
     }
-    /*
-     * @Scheduled(fixedRate = 4000) public void listTrade_ETH() { List<User>
-     * userList =
-     * userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
-     * userList.forEach(user -> {
-     * tradeService.execute(ETradeCurrency.ETH_CNY,user);
-     * 
-     * });
-     * 
-     * }
-     */
-    /*
-     * @Scheduled(fixedRate = 2000) public void listTrade_BTC() { List<User>
-     * userList =
-     * userRepostiory.findByDeleteFlag(EDeleteFlag.NORMAL.getIntegerCode());
-     * userList.forEach(user -> {
-     * tradeService.execute(ETradeCurrency.BTC_CNY,user);
-     * 
-     * });
-     * 
-     * }
-     */
+
 }

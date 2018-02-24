@@ -1,8 +1,8 @@
 package com.licc.trade.service;
 
+import com.licc.btc.chbtcapi.ChbtcApi;
 import com.licc.btc.chbtcapi.enums.ETradeCurrency;
 import com.licc.btc.chbtcapi.res.ticker.TickerApiRes;
-import com.licc.btc.chbtcapi.service.IChbtcApiService;
 import com.licc.btc.chbtcapi.util.BeanMapper;
 import com.licc.trade.domain.Ticker;
 import com.licc.trade.util.TimeUtil;
@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
 import com.licc.trade.repostiory.TickerRepostiory;
@@ -29,12 +28,10 @@ public class TickerService {
   @Resource
   TickerRepostiory repostiory;
 
-  @Resource
-  IChbtcApiService chbtcApiService;
 
   public void excute(ETradeCurrency tradeCurrency){
     // 查询当前行情数据
-    TickerApiRes tickerApiRes = chbtcApiService.ticker(tradeCurrency);
+    TickerApiRes tickerApiRes = ChbtcApi.ticker(tradeCurrency);
     if(tickerApiRes!=null) {
      Ticker ticker = BeanMapper.map(tickerApiRes.getTicker(),Ticker.class);
       ticker.setCurrency(tradeCurrency.getValue());

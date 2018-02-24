@@ -1,7 +1,7 @@
 package com.licc.btc.chbtcapi.enums;
 
 public enum ETradeCurrency {
-    BTC_CNY("btc_cny"), LTC_CNY("ltc_cny"), ETH_CNY("eth_cny"), ETC_CNY("etc_cny"),BTS_CNY("bts_cny"),HSR_CNY("hsr_cny");
+    ZB_QC("zb_qc"), ZB_USDT("zb_usdt"), ZB_BTC("zb_btc"), BTC_QC("btc_qc"),BTC_USDT("btc_usdt"),BCC_USDT("bcc_usdt");
     private String value;
 
     ETradeCurrency(String value) {

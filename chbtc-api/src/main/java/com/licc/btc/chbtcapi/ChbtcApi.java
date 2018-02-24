@@ -1,17 +1,13 @@
-package com.licc.btc.chbtcapi.service.impl;
+package com.licc.btc.chbtcapi;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.licc.btc.chbtcapi.Consts;
 import com.licc.btc.chbtcapi.enums.ETradeCurrency;
 import com.licc.btc.chbtcapi.req.AccountReq;
 import com.licc.btc.chbtcapi.req.CancelOrderReq;
@@ -24,7 +20,6 @@ import com.licc.btc.chbtcapi.res.order.GetOrderRes;
 import com.licc.btc.chbtcapi.res.order.GetOrdersRes;
 import com.licc.btc.chbtcapi.res.order.OrderRes;
 import com.licc.btc.chbtcapi.res.ticker.TickerApiRes;
-import com.licc.btc.chbtcapi.service.IChbtcApiService;
 import com.licc.btc.chbtcapi.util.BeanMapper;
 import com.licc.btc.chbtcapi.util.EncryDigestUtil;
 import com.licc.btc.chbtcapi.util.OkHttpUtils;
@@ -37,10 +32,9 @@ import com.licc.btc.chbtcapi.util.OkHttpUtils;
  * @date 2017/5/22 12:21
  * @see
  */
-@Service
-public class ChbtcApiServiceImpl implements IChbtcApiService {
+
+public class ChbtcApi {
     static final ObjectMapper mapper = new ObjectMapper();
-    private Logger            logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 获取行情数据
@@ -48,19 +42,16 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
      * @param tradeCurrency
      * @return
      */
-    @Override
-    public TickerApiRes ticker(ETradeCurrency tradeCurrency) {
-        String url = OkHttpUtils.attachHttpGetParam(Consts.Chbtc_Ticker, "currency", tradeCurrency.getValue());
-        // logger.info("获取行情接口:"+url);
+   
+    public static TickerApiRes ticker(ETradeCurrency tradeCurrency) {
+        String url = OkHttpUtils.attachHttpGetParam(Consts.Chbtc_Data+Consts.Chbtc_Data_Tticker, "market", tradeCurrency.getValue());
 
         try {
             String res = OkHttpUtils.getStringFromServer(url);
             TickerApiRes tickerApiRes = mapper.readValue(res, TickerApiRes.class);
-
             return tickerApiRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("获取行情接口数据出错");
             return null;
         }
 
@@ -72,8 +63,8 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
      * @param accountReq
      * @return
      */
-    @Override
-    public TickerApiRes getAccountInfo(AccountReq accountReq) {
+   
+    public static  TickerApiRes getAccountInfo(AccountReq accountReq) {
         String params = "method=" + Consts.Chbtc_Trade_AccountInfo + "&accesskey=" + accountReq.getAccessKey();
         String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(accountReq.getSecretKey()));
         String url = Consts.Chbtc_Trade + Consts.Chbtc_Trade_AccountInfo + "?" + params + "&sign=" + hash + "&reqTime="
@@ -81,11 +72,9 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
         try {
             String res = OkHttpUtils.getStringFromServer(url);
             TickerApiRes tickerApiRes = mapper.readValue(res, TickerApiRes.class);
-
             return tickerApiRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("获取用户信息出错");
             return null;
         }
 
@@ -97,8 +86,8 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
      * @param orderReq
      * @return
      */
-    @Override
-    public OrderRes order(OrderReq orderReq) {
+   
+    public static OrderRes order(OrderReq orderReq) {
         String params = "method=" + Consts.Chbtc_Trade_Order + "&accesskey=" + orderReq.getAccessKey() + "&price=" + orderReq.getPrice()
                 + "&amount=" + orderReq.getAmount() + "&tradeType=" + orderReq.getTradeOrderType().getValue() + "&currency="
                 + orderReq.getTradeCurrency().getValue();
@@ -111,7 +100,6 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
             return orderRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("委托买卖订单接口出错");
             return null;
         }
 
@@ -123,8 +111,8 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
      * @param cancelOrderReq
      * @return
      */
-    @Override
-    public CancelOrderRes cancelOrder(CancelOrderReq cancelOrderReq) {
+   
+    public static CancelOrderRes cancelOrder(CancelOrderReq cancelOrderReq) {
         String params = "method=" + Consts.Chbtc_Trade_CancelOrder + "&accesskey=" + cancelOrderReq.getAccessKey() + "&id="
                 + cancelOrderReq.getId() + "&currency=" + cancelOrderReq.getTradeCurrency().getValue();
         String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(cancelOrderReq.getSecretKey()));
@@ -136,7 +124,6 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
             return cancelOrderRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("----取消委托订单出错");
             return null;
         }
 
@@ -148,8 +135,8 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
      * @param getOrderReq
      * @return
      */
-    @Override
-    public GetOrderRes getOrder(GetOrderReq getOrderReq) {
+   
+    public static  GetOrderRes getOrder(GetOrderReq getOrderReq) {
         String params = "method=" + Consts.Chbtc_Trade_GetOrder + "&accesskey=" + getOrderReq.getAccessKey() + "&id=" + getOrderReq.getId()
                 + "&currency=" + getOrderReq.getTradeCurrency().getValue();
         String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(getOrderReq.getSecretKey()));
@@ -162,14 +149,13 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
             return getOrderRes;
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("获取订单信息出错 -订单编号：" + getOrderReq.getId());
             return null;
         }
 
     }
 
-    @Override
-    public List<GetOrdersRes> getUnfinishedOrdersIgnoreTradeType(GetUnfinishedOrdersReq req) {
+   
+    public static List<GetOrdersRes> getUnfinishedOrdersIgnoreTradeType(GetUnfinishedOrdersReq req) {
         String params = "method=" + Consts.Chbtc_Unfinished_Orders + "&accesskey=" + req.getAccessKey() + "&currency="
                 + req.getCurrency().getValue() + "&pageIndex=" + req.getPageIndex() + "&pageSize=" + req.getPageSize();
         String hash = EncryDigestUtil.hmacSign(params, EncryDigestUtil.digest(req.getSecretKey()));
@@ -184,13 +170,12 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
             return getOrderRes;
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("获取未成交或部份成交的买单和卖单，每次请求返回pageSize<=100条记录  出错");
             return Collections.EMPTY_LIST;
         }
     }
 
-    @Override
-    public List<GetOrdersRes> getOrdersNew(GetOrdersNewReq req) {
+   
+    public static List<GetOrdersRes> getOrdersNew(GetOrdersNewReq req) {
         String params = "method=" + Consts.Chbtc_Get_Orders_New + "&accesskey=" + req.getAccessKey() + "&tradeType="
                 + req.getOrderType().getValue() + "&currency=" + req.getCurrency().getValue() + "&pageIndex=" + req.getPageIndex()
                 + "&pageSize=" + req.getPageSize();
@@ -207,7 +192,6 @@ public class ChbtcApiServiceImpl implements IChbtcApiService {
             return resList;
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("(新)获取多个委托买单或卖单，每次请求返回pageSize<100条记录  出错");
             return Collections.EMPTY_LIST;
         }
     }

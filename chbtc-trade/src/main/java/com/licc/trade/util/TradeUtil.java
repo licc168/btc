@@ -46,7 +46,7 @@ public class TradeUtil {
 
     public static String getBuyPrice(String sell) {
         BigDecimal price = new BigDecimal(sell);
-        return price.add(new BigDecimal("0.11")).toString();
+        return price.add(new BigDecimal("0.01")).toString();
 
     }
 
